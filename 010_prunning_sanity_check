@@ -1,0 +1,98 @@
+###############################################################################
+# Scaffold sanity check for one hit/scaffold .sum file
+###############################################################################
+
+ORIG="/project/stuckert/users/wani/f2/anuran_genomes/filtering_step_1_chunks/GCA_002284835.2/GCA_002284835.2__hit3__KV968782.1.sum"
+
+echo "File:"
+echo "$ORIG"
+
+echo
+echo "Input rows:"
+tail -n +2 "$ORIG" | wc -l
+
+echo
+echo "Coordinate range:"
+awk -F'/' 'NR>1 {
+  s=$10; e=$11;
+  if (s>e) {tmp=s; s=e; e=tmp}
+  if (NR==2 || s<min) min=s;
+  if (NR==2 || e>max) max=e;
+} END {
+  print "min:", min, "max:", max, "span:", max-min
+}' "$ORIG"
+
+echo
+echo "First 50 sorted intervals:"
+awk -F'/' 'NR>1 {
+  s=$10; e=$11;
+  if (s>e) {tmp=s; s=e; e=tmp}
+  print s, e
+}' "$ORIG" | sort -k1,1n | head -50
+
+echo
+echo "Rough clusters using 100 bp max gap:"
+awk -F'/' 'NR>1 {
+  s=$10; e=$11;
+  if (s>e) {tmp=s; s=e; e=tmp}
+  print s, e
+}' "$ORIG" | sort -k1,1n | \
+awk 'BEGIN{clusters=0; curEnd=-1}
+{
+  if (clusters==0 || $1 > curEnd + 100) {
+    clusters++;
+    curEnd=$2;
+  } else if ($2 > curEnd) {
+    curEnd=$2;
+  }
+}
+END {print clusters}'
+
+echo
+echo "Largest positive gaps between sorted intervals:"
+awk -F'/' 'NR>1 {
+  s=$10; e=$11;
+  if (s>e) {tmp=s; s=e; e=tmp}
+  print s, e
+}' "$ORIG" | sort -k1,1n | \
+awk 'BEGIN{curEnd=-1}
+{
+  if (NR==1) {
+    curEnd=$2;
+    next;
+  }
+  gap = $1 - curEnd;
+  if (gap > 0) print gap;
+  if ($2 > curEnd) curEnd=$2;
+}' | sort -nr | head -20
+
+echo
+echo "First 50 unique normalized starts:"
+awk -F'/' 'NR>1 {
+  s=$10; e=$11;
+  if (s>e) {tmp=s; s=e; e=tmp}
+  print s
+}' "$ORIG" | sort -n | uniq | head -50
+
+echo
+echo "First 50 unique normalized ends:"
+awk -F'/' 'NR>1 {
+  s=$10; e=$11;
+  if (s>e) {tmp=s; s=e; e=tmp}
+  print e
+}' "$ORIG" | sort -n | uniq | head -50
+
+echo
+echo "Approximate hit density:"
+awk -F'/' 'NR>1 {
+  s=$10; e=$11;
+  if (s>e) {tmp=s; s=e; e=tmp}
+  if (NR==2 || s<min) min=s;
+  if (NR==2 || e>max) max=e;
+  count++;
+} END {
+  span=max-min;
+  print "hits:", count;
+  print "span_bp:", span;
+  if (span > 0) print "hits_per_kb:", count/(span/1000);
+}' "$ORIG"

@@ -1,0 +1,34 @@
+#!/bin/bash
+#SBATCH --job-name=busco_compleasm
+#SBATCH --output=/project/stuckert/users/wani/f2/busco/all_genome_logs/busco_%A_%a.out
+#SBATCH --error=/project/stuckert/users/wani/f2/busco/all_genome_logs/busco_%A_%a.err
+#SBATCH --cpus-per-task=24
+#SBATCH --mem=200G
+#SBATCH --time=4-00:00:00
+#SBATCH --array=1-225%3
+
+source /project/stuckert/software/anaconda3/etc/profile.d/conda.sh
+conda activate compleasm
+
+GENOME_LIST=/project/stuckert/users/wani/f2/scripts/genome_fasta_list.txt
+GENOME=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$GENOME_LIST")
+
+ACCESSION=$(basename "$(dirname "$GENOME")")
+
+OUTDIR=/project/stuckert/users/wani/f2/busco/results/${ACCESSION}
+
+mkdir -p /project/stuckert/users/wani/f2/busco/all_genome_logs
+mkdir -p /project/stuckert/users/wani/f2/busco/results
+mkdir -p "$OUTDIR"
+
+echo "SLURM task ID: $SLURM_ARRAY_TASK_ID"
+echo "Genome: $GENOME"
+echo "Accession: $ACCESSION"
+echo "Output directory: $OUTDIR"
+
+compleasm run \
+--assembly_path "$GENOME" \
+--output_dir "$OUTDIR" \
+--threads 24 \
+--lineage tetrapoda_odb12 \
+--library_path /project/stuckert/users/wani/f2/busco/mb_downloads

@@ -1,0 +1,19 @@
+#!/bin/bash
+#SBATCH --job-name=test_compleasm
+#SBATCH --output=/project/stuckert/users/wani/f2/busco/logs/test_compleasm.%j.out
+#SBATCH --error=/project/stuckert/users/wani/f2/busco/logs/test_compleasm.%j.err
+#SBATCH --cpus-per-task=24
+#SBATCH --mem=100G
+#SBATCH --time=2-00:00:00
+
+source /project/stuckert/software/anaconda3/etc/profile.d/conda.sh
+conda activate compleasm
+
+mkdir -p /project/stuckert/users/wani/f2/busco/test_run
+
+compleasm run \
+--assembly_path /project/stuckert/users/wani/f2/anuran_genomes/ncbi_dataset/data/GCA_002284835.2/GCA_002284835.2_RCv2.1_genomic.fna \
+--output_dir /project/stuckert/users/wani/f2/busco/test_run \
+--threads 24 \
+--lineage tetrapoda_odb12 \
+--library_path /project/stuckert/users/wani/f2/busco/mb_downloads

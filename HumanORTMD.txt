@@ -1,0 +1,16 @@
+motif,domain
+mnddgkvnassegyfilvgfsnwphlev,ECL1
+VIFVVVLIFYLMTLIGNLFIIILS,TM1
+yldshlh,ECL2
+TPMYFFLSNLSFLDLCYTTSSIP,TM2
+qllvnlwgpektisyagcmiq,ECL3
+LYFVLALGTTECVLLVVMSY,TM3
+dryaavcrplhytvlmhpr,ECL4
+FCHLLAVASWVSGFTNSAL,TM4
+hssftfwvplcghrqvdhffcevpallrlscvdthvn,ECL5
+ELTLMITSSIFVLIPLILILTSYG,TM5
+aivravlrmqsttglqk,ECL6
+VFGTCGAHLMAVSLFFIPAMCIY,TM6
+lqppsgnsqdqgk,ECL7
+FIALFYTVVTPSLNPLIYTL,TM7
+rnkvvrgavkrlmgwe,ECL8
